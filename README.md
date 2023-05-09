@@ -1,2 +1,2 @@
 # JeffBuckley
-No estoy completamente seguro. Pero la idea es obtener playlists que podrían gustarte. 
+No estoy completamente seguro. Pero la idea es obtener música que podrían gustarte. 
