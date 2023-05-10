@@ -1,1 +1,23 @@
-<h1>Hello!</h1>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Music Taste Generator</title>
+	<link rel="stylesheet" href="https://developer.spotify.com/design/assets/css/spotify-button.d8e3b3d3.css">
+</head>
+<body>
+	<h1>Music Taste Generator</h1>
+	<p>Please log in with your Spotify account to use this app.</p>
+	<form action="https://accounts.spotify.com/authorize" method="GET">
+		<input type="hidden" id="client_id" name="client_id" value="YOUR_CLIENT_ID">
+		<input type="hidden" id="response_type" name="response_type" value="code">
+		<input type="hidden" id="redirect_uri" name="redirect_uri" value="YOUR_REDIRECT_URI">
+		<input type="hidden" id="scope" name="scope" value="user-read-private user-read-email">
+		<input type="hidden" id="state" name="state">
+		<button type="submit" class="btn btn-green btn--spotify" id="spotify-login-btn">
+			<svg class="icon-spotify" role="img" aria-label="Spotify"><use xlink:href="#icon-spotify"></use></svg>
+			Log in with Spotify
+		</button>
+	</form>
+</body>
+</html>
+
