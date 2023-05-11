@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Music Taste Generator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your Top Tracks</title>
+    <style>
+        #error-message { color: red; }
+    </style>
 </head>
 <body>
-	<h1>Your Top Tracks</h1>
-
-    <!-- The following divs are for displaying the fetched user profile and top tracks -->
-    <div id="user-profile"></div>
-    <div id="top-tracks"></div>
-
+    <h1>Your Top Tracks</h1>
+    <div id="error-message"></div>
+    <ul id="tracks-list"></ul>
     <script src="callback.js"></script>
 </body>
 </html>
+
