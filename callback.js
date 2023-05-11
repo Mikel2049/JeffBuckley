@@ -12,9 +12,6 @@ window.onload = async function() {
             const userData = await fetchUserData(accessToken);
             const topTracks = await fetchTopTracks(accessToken);
 
-            document.getElementById('login').style.display = 'none';
-            document.getElementById('loggedin').style.display = 'block';
-
             document.getElementById('user-profile').innerHTML = '<pre>' + JSON.stringify(userData, null, 2) + '</pre>';
             document.getElementById('top-tracks').innerHTML = '<pre>' + JSON.stringify(topTracks, null, 2) + '</pre>';
         } catch (err) {
