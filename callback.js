@@ -1,50 +1,70 @@
-// get the returned query parameters
-function getQueryParams() {
-    let params = {};
-    let regex = /([^&=]+)=([^&]*)/g;
-    let m;
+const REDIRECT_URI = "https://mikel2049.github.io/JeffBuckley/callback.html";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-i-uJIoamOczv4JAfER39BNlACqm9RIK2bD3J9cnFBDIXwrjTN15vQEVw2dxxrCspSQ/exec";
 
-    while (m = regex.exec(window.location.hash.substring(1))) {
-        params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+window.onload = async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const error = urlParams.get('error');
+
+    if (code) {
+        try {
+            const accessToken = await fetchAccessToken(code);
+            const userData = await fetchUserData(accessToken);
+            const topTracks = await fetchTopTracks(accessToken);
+
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('loggedin').style.display = 'block';
+
+            document.getElementById('user-profile').innerHTML = '<pre>' + JSON.stringify(userData, null, 2) + '</pre>';
+            document.getElementById('top-tracks').innerHTML = '<pre>' + JSON.stringify(topTracks, null, 2) + '</pre>';
+        } catch (err) {
+            console.error('Error getting Tracks', err);
+        }
+    } else if (error) {
+        alert(`There was an error: ${error}`);
     }
-    return params;
-}
+};
 
-// use the access token to access the Spotify Web API
-function getTopTracks(access_token) {
-    fetch('https://api.spotify.com/v1/me/top/tracks?limit=10', {
+async function fetchAccessToken(code) {
+    let response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        body: `grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`,
         headers: {
-            'Authorization': `Bearer ${access_token}`
+            'Content-Type': 'application/x-www-form-urlencoded'
         }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data); // log the data for debugging
-        let tracks = data.items;
-        let trackList = document.getElementById('tracks');
-        tracks.forEach(track => {
-            let listItem = document.createElement('li');
-            listItem.textContent = `${track.name} by ${track.artists[0].name}`;
-            trackList.appendChild(listItem);
-        });
-    })
-    .catch(e => {
-        console.log('There was a problem with the fetch operation: ' + e.message);
     });
+    if (response.ok) {
+        let jsonResponse = await response.json();
+        return jsonResponse.access_token;
+    } else {
+        throw new Error('Request failed!');
+    }
 }
 
-window.onload = function() {
-    let params = getQueryParams();
-    let access_token = params['access_token'];
-
-    if (access_token) {
-        getTopTracks(access_token);
+async function fetchUserData(accessToken) {
+    let response = await fetch('https://api.spotify.com/v1/me', {
+        headers: {
+            'Authorization': 'Bearer ' + accessToken
+        }
+    });
+    if (response.ok) {
+        let jsonResponse = await response.json();
+        return jsonResponse;
     } else {
-        console.log('Access token not found');
+        throw new Error('Request failed!');
+    }
+}
+
+async function fetchTopTracks(accessToken) {
+    let response = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=10', {
+        headers: {
+            'Authorization': 'Bearer ' + accessToken
+        }
+    });
+    if (response.ok) {
+        let jsonResponse = await response.json();
+        return jsonResponse;
+    } else {
+        throw new Error('Request failed!');
     }
 }
