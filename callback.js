@@ -17,6 +17,34 @@ function getTopTracks(access_token) {
             'Authorization': `Bearer ${access_token}`
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
-        let tracks = data.items
+        console.log(data); // log the data for debugging
+        let tracks = data.items;
+        let trackList = document.getElementById('tracks');
+        tracks.forEach(track => {
+            let listItem = document.createElement('li');
+            listItem.textContent = `${track.name} by ${track.artists[0].name}`;
+            trackList.appendChild(listItem);
+        });
+    })
+    .catch(e => {
+        console.log('There was a problem with the fetch operation: ' + e.message);
+    });
+}
+
+window.onload = function() {
+    let params = getQueryParams();
+    let access_token = params['access_token'];
+
+    if (access_token) {
+        getTopTracks(access_token);
+    } else {
+        console.log('Access token not found');
+    }
+}
