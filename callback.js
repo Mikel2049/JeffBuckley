@@ -1,67 +1,72 @@
 const REDIRECT_URI = "https://mikel2049.github.io/JeffBuckley/callback.html";
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVBT_5WdapKpiitmRwhBeN8DIBDWOTujjMqBbIWRCggF-iZAf_UYPtIpovl_l4OpFosA/exec";
 
-window.onload = async function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const error = urlParams.get('error');
-
-    if (code) {
-        try {
-            const accessToken = await fetchAccessToken(code);
-            const userData = await fetchUserData(accessToken);
-            const topTracks = await fetchTopTracks(accessToken);
-
-            document.getElementById('user-profile').innerHTML = '<pre>' + JSON.stringify(userData, null, 2) + '</pre>';
-            document.getElementById('top-tracks').innerHTML = '<pre>' + JSON.stringify(topTracks, null, 2) + '</pre>';
-        } catch (err) {
-            console.error('Error getting Tracks', err);
-        }
-    } else if (error) {
-        alert(`There was an error: ${error}`);
+window.onload = function() {
+    let params = getHashParams();
+    let code = params.code;
+    
+    if(code){
+        fetchAccessToken(code);
     }
-};
+}
 
-async function fetchAccessToken(code) {
-    let response = await fetch(GOOGLE_SCRIPT_URL, {
+function fetchAccessToken(code) {
+    let myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+    let urlencoded = new URLSearchParams();
+    urlencoded.append("code", code);
+
+    let requestOptions = {
         method: 'POST',
-        body: `grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    });
-    if (response.ok) {
-        let jsonResponse = await response.json();
-        return jsonResponse.access_token;
-    } else {
-        throw new Error('Request failed!');
-    }
+        headers: myHeaders,
+        body: urlencoded,
+        redirect: 'follow'
+    };
+
+    fetch("https://script.google.com/macros/s/AKfycbx-i-uJIoamOczv4JAfER39BNlACqm9RIK2bD3J9cnFBDIXwrjTN15vQEVw2dxxrCspSQ/exec", requestOptions)
+        .then(response => response.json())
+        .then(result => {
+            let accessToken = result.body.access_token;
+            fetchUserData(accessToken);
+            fetchTopTracks(accessToken);
+        })
+        .catch(error => console.log('error', error));
 }
 
-async function fetchUserData(accessToken) {
-    let response = await fetch('https://api.spotify.com/v1/me', {
-        headers: {
-            'Authorization': 'Bearer ' + accessToken
-        }
+function fetchUserData(accessToken){
+    fetch('https://api.spotify.com/v1/me',{
+        method: 'GET',
+        headers: {'Authorization' : 'Bearer ' + accessToken}
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        document.getElementById('user').innerText = data.display_name;
     });
-    if (response.ok) {
-        let jsonResponse = await response.json();
-        return jsonResponse;
-    } else {
-        throw new Error('Request failed!');
-    }
 }
 
-async function fetchTopTracks(accessToken) {
-    let response = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=10', {
-        headers: {
-            'Authorization': 'Bearer ' + accessToken
-        }
+function fetchTopTracks(accessToken){
+    fetch('https://api.spotify.com/v1/me/top/tracks?limit=10',{
+        method: 'GET',
+        headers: {'Authorization' : 'Bearer ' + accessToken}
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        let list = document.getElementById('tracks');
+        data.items.forEach(item => {
+            let listItem = document.createElement('li');
+            listItem.innerText = `${item.name} by ${item.artists[0].name}`;
+            list.appendChild(listItem);
+        });
     });
-    if (response.ok) {
-        let jsonResponse = await response.json();
-        return jsonResponse;
-    } else {
-        throw new Error('Request failed!');
+}
+
+function getHashParams() {
+    let hashParams = {};
+    let e, r = /([^&;=]+)=?([^&;]*)/g,
+        q = window.location.hash.substring(1);
+    while ( e = r.exec(q)) {
+       hashParams[e[1]] = decodeURIComponent(e[2]);
     }
+    return hashParams;
 }
