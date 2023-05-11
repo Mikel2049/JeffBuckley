@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>Music Taste Generator</title>
+	<link rel="stylesheet" href="https://developer.spotify.com/design/assets/css/spotify-button.d8e3b3d3.css">
 </head>
 <body>
 	<h1>Music Taste Generator</h1>
@@ -9,7 +10,7 @@
 	<form action="https://accounts.spotify.com/authorize" method="GET">
 		<input type="hidden" id="client_id" name="client_id" value="b53ae3b8a9b44bb48452664002cfe0ea">
 		<input type="hidden" id="response_type" name="response_type" value="code">
-		<input type="hidden" id="redirect_uri" name="redirect_uri" value="https://mikel2049.github.io/JeffBuckley/">
+		<input type="hidden" id="redirect_uri" name="redirect_uri" value="https://mikel2049.github.io/JeffBuckley/callback.html">
 		<input type="hidden" id="scope" name="scope" value="user-top-read user-read-private user-read-email">
 		<input type="hidden" id="state" name="state">
 		<button type="submit" class="btn btn-green btn--spotify" id="spotify-login-btn">
@@ -17,11 +18,9 @@
 			Log in with Spotify
 		</button>
 	</form>
-    <h2 id="user"></h2>
-    <ul id="tracks"></ul>
-    <script src="callback.js"></script>
 </body>
 </html>
+
 
 
 
