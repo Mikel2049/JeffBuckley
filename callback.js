@@ -1,5 +1,5 @@
 const REDIRECT_URI = "https://mikel2049.github.io/JeffBuckley/callback.html";
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-i-uJIoamOczv4JAfER39BNlACqm9RIK2bD3J9cnFBDIXwrjTN15vQEVw2dxxrCspSQ/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVBT_5WdapKpiitmRwhBeN8DIBDWOTujjMqBbIWRCggF-iZAf_UYPtIpovl_l4OpFosA/exec";
 
 window.onload = async function() {
     const urlParams = new URLSearchParams(window.location.search);
