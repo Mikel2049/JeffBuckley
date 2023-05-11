@@ -1,11 +1,11 @@
 // get the returned query parameters
 function getQueryParams() {
-    let e, r = /([^&;=]+)=?([^&;]*)/g,
-        q = window.location.hash.substring(1),
-        params = {};
+    let params = {};
+    let regex = /([^&=]+)=([^&]*)/g;
+    let m;
 
-    while (e = r.exec(q)) {
-        params[e[1]] = decodeURIComponent(e[2]);
+    while (m = regex.exec(window.location.hash.substring(1))) {
+        params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
     }
     return params;
 }
